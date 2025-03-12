@@ -22,19 +22,24 @@ export default function Navbar() {
           <nav className="hidden md:flex gap-6">
             <Link
               href="/try-now"
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === "/try-now" ? "text-foreground" : "text-muted-foreground"
-              }`}
+              className={`text-sm font-medium transition-colors hover:text-primary ${pathname === "/try-now" ? "text-foreground" : "text-muted-foreground"
+                }`}
             >
               Try Now
             </Link>
             <Link
               href="/waitlist"
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === "/waitlist" ? "text-foreground" : "text-muted-foreground"
-              }`}
+              className={`text-sm font-medium transition-colors hover:text-primary ${pathname === "/waitlist" ? "text-foreground" : "text-muted-foreground"
+                }`}
             >
               Waitlist
+            </Link>
+            <Link
+              href="/upload"
+              className={`text-sm font-medium transition-colors hover:text-primary ${pathname === "/waitlist" ? "text-foreground" : "text-muted-foreground"
+                }`}
+            >
+              Video Upload
             </Link>
           </nav>
         </div>
