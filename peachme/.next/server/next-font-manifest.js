@@ -1,1 +1,0 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/spagum/Creative Cloud Files Personal Account ethanlee9113@gmail.com DB2AF82457DE6AF37F000101@AdobeID/Important Things/Programming Things/PeachMe Frontend/Peachme-Frontend/Peachme-Frontend/peachme/app/layout\":[\"static/media/a34f9d1faa5f3315-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
