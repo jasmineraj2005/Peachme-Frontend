@@ -12,7 +12,7 @@ export default function Home() {
             <Typewriter
               prefix="We help you pitch at"
               words={[
-                "Y Combinator (YC)",
+                "Y Combinator YC",
                 "Sequoia Capital",
                 "Andreessen Horowitz",
                 "Benchmark Capital",
