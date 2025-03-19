@@ -6,7 +6,8 @@ services:
     ports:
       - "8001:8001"
     volumes:
-      - ./peachme_fastapi:/app  # Mount the code for hot reload
+      - ./peachme_fastapi/main.py:/app/main.py
+      - ./peachme_fastapi/app:/app/app
       - ./peachme_fastapi/media:/app/media
       - ./peachme_fastapi/peachme.db:/app/peachme.db
       - ./.env:/app/.env
@@ -26,11 +27,11 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/app  # Mount the code for hot reload
-      - /app/node_modules  # Don't override node_modules
-      - /app/.next  # Don't override Next.js build
+      - .:/app
+      - /app/node_modules
+      - /app/.next
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-    command: npm run dev  # Run in development mode
+    command: npm run dev
     depends_on:
       - api 
