@@ -54,6 +54,7 @@ export default function TranscriptionPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const [evaluating, setEvaluating] = useState(false)
 
   useEffect(() => {
     const fetchTranscription = async () => {
@@ -97,6 +98,45 @@ export default function TranscriptionPage() {
   const filteredSegments = transcription?.segments?.filter(segment =>
     segment.text.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const handleEvaluatePitch = async () => {
+    if (!transcription?.text) return;
+    
+    setEvaluating(true);
+    try {
+      const response = await fetch('http://0.0.0.0:8001/api/video/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: transcription.text,
+          conversation_id: params.id !== 'latest' ? params.id : undefined
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze pitch');
+      }
+
+      const data = await response.json();
+      
+      // Store the evaluation result and transcription data
+      localStorage.setItem('pitchEvaluation', JSON.stringify({
+        evaluation: data,
+        transcription: transcription,
+        timestamp: new Date().toISOString()
+      }));
+
+      // Navigate to the evaluation page
+      router.push('/pitch-evaluation');
+    } catch (error) {
+      console.error('Error evaluating pitch:', error);
+      alert('Failed to evaluate pitch. Please try again.');
+    } finally {
+      setEvaluating(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -174,6 +214,14 @@ export default function TranscriptionPage() {
             </Button>
             <Button variant="outline" onClick={() => router.back()}>
               Back
+            </Button>
+            <Button 
+              variant="default"
+              className="bg-gradient-to-r from-[#FFB6A3] via-[#FFA088] to-[#FF8A6D] text-white hover:opacity-90"
+              onClick={handleEvaluatePitch}
+              disabled={evaluating}
+            >
+              {evaluating ? 'Evaluating...' : 'Evaluate Pitch'}
             </Button>
           </div>
 
