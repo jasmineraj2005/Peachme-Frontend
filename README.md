@@ -1,114 +1,143 @@
-# Peachme Frontend
+# PeachMe 
 
-A modern web application built with Next.js for the Peachme platform.
+A Next.js frontend application for the PeachMe platform, providing video upload and transcription capabilities.
 
-## Project Overview
+## Prerequisites
 
-Peachme is a platform that helps users create and share content. This repository contains the frontend codebase built with Next.js, React, and Tailwind CSS.
+- Node.js 18 or higher
+- Python 3.11 or higher (for backend)
+- FFmpeg (for video processing)
+- Docker and Docker Compose (optional)
 
-## Directory Structure
+## Environment Setup
 
-The project follows a standard Next.js structure:
+1. Create a `.env` file in the root directory:
+```env
+# Frontend Environment Variables
+NEXT_PUBLIC_API_URL=http://localhost:8001
 
+# Backend Environment Variables
+OPENAI_API_KEY=your_openai_api_key_here
+LANGCHAIN_API_KEY=your_langchain_api_key_here
+LANGCHAIN_PROJECT=peachme-chat
+LANGCHAIN_TRACING_V2=true
+DATABASE_URL=sqlite:///./peachme_fastapi/peachme.db
+CORS_ORIGINS=["http://localhost:3000"]
 ```
-peachme/
-├── app/                  # Next.js app directory (pages, layouts)
-├── components/           # Reusable React components
-├── hooks/                # Custom React hooks
-├── lib/                  # Utility functions and libraries
-├── public/               # Static assets
-├── styles/               # Global styles
-```
 
-## Getting Started
+## Running with Docker (Recommended)
 
-### Prerequisites
+This method runs both frontend and backend services in containers:
 
-- Node.js (v18.x or later recommended)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/Peachme-Frontend.git
-cd Peachme-Frontend
+# Build and start all services
+docker-compose up --build
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
 ```
 
-2. Navigate to the peachme directory:
+The services will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8001
+
+## Running Without Docker
+
+### Backend Setup
+
+1. Navigate to the backend directory:
 ```bash
-cd peachme
+cd peachme_fastapi
+```
+
+2. Create and activate a Python virtual environment:
+```bash
+# On macOS/Linux
+python -m venv venv
+source venv/bin/activate
+
+# On Windows
+python -m venv venv
+.\venv\Scripts\activate
 ```
 
 3. Install dependencies:
 ```bash
+pip install -r requirements.txt
+```
+
+4. Start the FastAPI server:
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+```
+
+### Frontend Setup
+
+1. Install dependencies:
+```bash
 npm install
 ```
 
-> **Note:** If you encounter dependency conflicts, the project includes a `.npmrc` file that automatically uses the `legacy-peer-deps` flag to resolve these issues.
-
-### Running the Development Server
-
+2. Start the development server:
 ```bash
 npm run dev
 ```
 
-This will start the development server at [http://localhost:3000](http://localhost:3000).
+The services will be available at the same ports as with Docker.
 
-### Building for Production
+## Development
 
-```bash
-npm run build
+### Directory Structure
+```
+.
+├── app/                  # Next.js frontend application
+├── peachme_fastapi/      # FastAPI backend (submodule)
+├── docker-compose.yml    # Docker services configuration
+├── Dockerfile.frontend   # Frontend container configuration
+└── .env                 # Environment variables
 ```
 
-### Starting Production Server
+### Making Changes
 
+- Frontend code changes will automatically trigger hot reload
+- Backend code changes will automatically trigger reload in development mode
+- Environment variables changes require service restart
+
+## API Documentation
+
+When the backend is running, API documentation is available at:
+- Swagger UI: http://localhost:8001/docs
+- ReDoc: http://localhost:8001/redoc
+
+## Common Issues
+
+1. **Port Conflicts**: If ports 3000 or 8001 are in use, modify the port mappings in `docker-compose.yml` or use different ports when running services directly.
+
+2. **Environment Variables**: Make sure all required environment variables are set in `.env` file.
+
+3. **FFmpeg Missing**: Install FFmpeg if running without Docker:
 ```bash
-npm start
+# On macOS
+brew install ffmpeg
+
+# On Ubuntu/Debian
+sudo apt-get install ffmpeg
+
+# On Windows (using Chocolatey)
+choco install ffmpeg
 ```
 
-## Key Features
+## Contributing
 
-- Modern UI with Tailwind CSS
-- Component-based architecture
-- Responsive design
-- Animations and transitions
-
-## Dependencies
-
-The project uses several key dependencies:
-
-- **Next.js**: React framework for production
-- **React**: JavaScript library for building user interfaces
-- **Tailwind CSS**: Utility-first CSS framework
-- **Radix UI**: Unstyled, accessible components
-- **Framer Motion**: Animation library
-- **date-fns**: Date utility library
-
-## Troubleshooting
-
-### Dependency Issues
-
-If you encounter dependency conflicts when installing packages, try:
-
-```bash
-npm install --legacy-peer-deps
-```
-
-The project includes a `.npmrc` file that should handle this automatically.
-
-### App Directory Not Found
-
-If you encounter an error about the app directory not being found, ensure you're in the correct directory:
-
-```bash
-cd Peachme-Frontend/peachme
-```
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-[MIT License](LICENSE)
-
-## Contact
-
-For questions or support, please open an issue in the repository.
+This project is licensed under the MIT License - see the LICENSE file for details.

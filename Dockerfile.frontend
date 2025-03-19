@@ -2,8 +2,8 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy configuration files first
+COPY package*.json .npmrc tsconfig*.json tailwind.config.* postcss.config.* ./
 
 # Install dependencies
 RUN npm install
