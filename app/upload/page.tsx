@@ -15,6 +15,7 @@ export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [status, setStatus] = useState<string>("")
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const { user, isLoading } = useAuth()
@@ -36,34 +37,145 @@ export default function UploadPage() {
     if (!file) return
 
     setIsUploading(true)
+    setStatus("Uploading video...")
 
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 95) {
-          clearInterval(interval)
-          return prev
-        }
-        return prev + 5
+    try {
+      // Create form data
+      const formData = new FormData()
+      formData.append('video', file)
+      formData.append('title', title)
+      formData.append('description', description)
+
+      // Upload progress simulation
+      const interval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 95) {
+            clearInterval(interval)
+            return prev
+          }
+          return prev + 5
+        })
+      }, 300)
+
+      // Make API call to transcribe endpoint
+      const response = await fetch('http://0.0.0.0:8001/api/video/transcribe', {
+        method: 'POST',
+        body: formData,
       })
-    }, 300)
 
-    // Simulate API call
-    setTimeout(() => {
+      // Clear interval and set progress to 100%
       clearInterval(interval)
       setUploadProgress(100)
 
-      setTimeout(() => {
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Server error:', errorText)
+        throw new Error(`Failed to transcribe video: ${response.status} ${response.statusText}`)
+      }
+
+      const responseText = await response.text()
+      console.log('Raw response:', responseText)
+      
+      let data
+      try {
+        data = JSON.parse(responseText)
+      } catch (e) {
+        console.error('Failed to parse JSON response:', e)
+        throw new Error('Invalid response from server: not a valid JSON')
+      }
+      
+      console.log('Parsed response data:', data)
+      
+      setStatus("Processing transcription...")
+
+      // Check if we have a transcript in the response
+      if (data.transcript) {
+        // If we have the transcription text directly
         setIsUploading(false)
         setTitle("")
         setDescription("")
         setFile(null)
         setUploadProgress(0)
+        setStatus("")
+        
+        // Store the transcription in localStorage temporarily
+        localStorage.setItem('lastTranscription', JSON.stringify({
+          title,
+          description,
+          text: data.transcript,
+          timestamp: new Date().toISOString()
+        }))
+        
+        // Redirect to transcription display page
+        router.push('/transcription/latest')
+        return
+      }
 
-        // Show success message or redirect
-        alert("Video uploaded successfully!")
-      }, 500)
-    }, 3000)
+      // If no transcript in response, look for an ID to poll
+      const transcriptionId = data.id || data.transcription_id || data.conversation_id
+      if (!transcriptionId) {
+        console.error('Invalid server response:', data)
+        throw new Error('No transcription data received from server')
+      }
+
+      // Poll for transcription status
+      let attempts = 0
+      const maxAttempts = 150 // 5 minutes with 2-second intervals
+      
+      const pollInterval = setInterval(async () => {
+        try {
+          attempts++
+          if (attempts >= maxAttempts) {
+            clearInterval(pollInterval)
+            throw new Error('Transcription timed out after 5 minutes')
+          }
+
+          const statusUrl = `http://0.0.0.0:8001/api/video/transcribe/${transcriptionId}`
+          console.log('Polling status:', statusUrl) // Debug log
+          
+          const statusResponse = await fetch(statusUrl)
+          console.log('Status response:', statusResponse.status) // Debug log
+          
+          if (!statusResponse.ok) {
+            const errorText = await statusResponse.text()
+            console.error('Status check error:', errorText)
+            throw new Error(`Failed to check transcription status: ${statusResponse.status}`)
+          }
+
+          const statusData = await statusResponse.json()
+          console.log('Status data:', statusData) // Debug log
+
+          if (statusData.status === 'completed') {
+            clearInterval(pollInterval)
+            // Reset form
+            setIsUploading(false)
+            setTitle("")
+            setDescription("")
+            setFile(null)
+            setUploadProgress(0)
+            setStatus("")
+            // Redirect to transcription page
+            router.push(`/transcription/${transcriptionId}`)
+          } else if (statusData.status === 'failed') {
+            clearInterval(pollInterval)
+            throw new Error('Transcription failed: ' + (statusData.error || 'Unknown error'))
+          } else {
+            setStatus(`Processing transcription... (${Math.round((attempts / maxAttempts) * 100)}%)`)
+          }
+        } catch (error) {
+          clearInterval(pollInterval)
+          console.error('Polling error:', error)
+          throw error
+        }
+      }, 2000)
+
+    } catch (error) {
+      console.error('Error in upload/transcribe process:', error)
+      alert(error instanceof Error ? error.message : 'Failed to upload and transcribe video. Please try again.')
+      setIsUploading(false)
+      setUploadProgress(0)
+      setStatus("")
+    }
   }
 
   return (
@@ -144,7 +256,7 @@ export default function UploadPage() {
           {isUploading && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Uploading...</span>
+                <span>{status}</span>
                 <span>{uploadProgress}%</span>
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
@@ -157,7 +269,7 @@ export default function UploadPage() {
           )}
 
           <Button type="submit" className="w-full" disabled={!file || isUploading}>
-            {isUploading ? "Uploading..." : "Upload Pitch Video"}
+            {isUploading ? "Processing..." : "Upload Pitch Video"}
           </Button>
         </form>
       </div>
