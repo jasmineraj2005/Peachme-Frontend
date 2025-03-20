@@ -206,30 +206,6 @@ export default function MarketResearchPage() {
               {loading ? 'Researching...' : research ? 'Update Research' : 'Conduct Market Research'}
             </Button>
             
-            <Button
-              onClick={() => router.push('/market-research/test')}
-              variant="outline"
-              className="border-orange-500 text-orange-500"
-            >
-              API Test Page
-            </Button>
-            
-            <Button
-              onClick={() => {
-                console.log("Debug info:");
-                console.log("pitchContext:", pitchContext);
-                console.log("research:", research);
-                console.log("loading:", loading);
-                console.log("error:", error);
-                alert("Debug info printed to console");
-              }}
-              variant="outline"
-              size="sm"
-              className="text-xs"
-            >
-              Debug
-            </Button>
-            
             {error && (
               <p className="mt-2 text-red-500 text-sm">{error}</p>
             )}
@@ -243,9 +219,6 @@ export default function MarketResearchPage() {
             <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50">
               <h2 className="text-xl font-semibold mb-2">Research Summary</h2>
               <p className="text-gray-700">{research.summary}</p>
-              <p className="text-xs text-gray-500 mt-4">
-                Data from {Object.keys(research).length} fields: {Object.keys(research).join(', ')}
-              </p>
             </Card>
 
             {/* Tabbed Content */}
@@ -396,14 +369,6 @@ export default function MarketResearchPage() {
                 <Card className="p-6">
                   <div className="space-y-6">
                     <h2 className="text-xl font-semibold">Research Sources</h2>
-                    
-                    {/* Debug Info */}
-                    <div className="p-2 bg-gray-100 rounded text-xs text-gray-700 mb-4">
-                      <h3 className="font-medium">Debug Info</h3>
-                      <p className="my-1">market_size_sources: {research.market_size_sources ? JSON.stringify(research.market_size_sources) : 'undefined'}</p>
-                      <p className="my-1">trends_source: {research.trends_source || 'undefined'}</p>
-                      <p className="my-1">competitors with urls: {research.competitors.filter(c => c.url).length}</p>
-                    </div>
                     
                     {/* Market Size Sources */}
                     <div className="space-y-2">
