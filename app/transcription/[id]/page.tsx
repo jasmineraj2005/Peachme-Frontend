@@ -267,7 +267,11 @@ export default function TranscriptionPage() {
       
       // Store the evaluation result and transcription data
       localStorage.setItem('pitchEvaluation', JSON.stringify({
-        evaluation: data,
+        evaluation: {
+          ...data,
+          // Include context data if it exists in the response
+          context: data.context || null
+        },
         transcription: transcription,
         timestamp: new Date().toISOString()
       }));

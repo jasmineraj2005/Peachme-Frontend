@@ -19,6 +19,12 @@ interface PitchEvaluation {
     delivery_feedback: string;
     feedback: string;
     conversation_id?: string;
+    context?: {
+      industry: string;
+      verticals: string[];
+      problem: string;
+      summary: string;
+    }
   };
   transcription: {
     title?: string;
@@ -158,6 +164,40 @@ export default function PitchEvaluationPage() {
             </div>
           </div>
 
+          {/* Pitch Context Section */}
+          {evaluation.evaluation.context && (
+            <div className="mb-6 border-t pt-4">
+              <h2 className="text-lg font-semibold mb-3">
+                <span className="mr-2">🔎</span>
+                Pitch Context Analysis
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                  <h3 className="text-sm font-medium text-blue-700 mb-1">Industry</h3>
+                  <p className="text-sm">{evaluation.evaluation.context.industry}</p>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg border border-green-100">
+                  <h3 className="text-sm font-medium text-green-700 mb-1">Problem Statement</h3>
+                  <p className="text-sm">{evaluation.evaluation.context.problem}</p>
+                </div>
+                <div className="bg-purple-50 p-3 rounded-lg border border-purple-100 md:col-span-2">
+                  <h3 className="text-sm font-medium text-purple-700 mb-1">Market Verticals</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {evaluation.evaluation.context.verticals.map((vertical, index) => (
+                      <span key={index} className="inline-block px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full">
+                        {vertical}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="bg-amber-50 p-3 rounded-lg border border-amber-100 md:col-span-2">
+                  <h3 className="text-sm font-medium text-amber-700 mb-1">Summary</h3>
+                  <p className="text-sm">{evaluation.evaluation.context.summary}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Tabbed Feedback Sections */}
           <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid grid-cols-5 mb-4">
@@ -224,13 +264,22 @@ export default function PitchEvaluationPage() {
           <Button variant="outline" onClick={() => router.back()}>
             Back to Transcription
           </Button>
-          <Button 
-            variant="default"
-            className="bg-gradient-to-r from-[#FFB6A3] via-[#FFA088] to-[#FF8A6D] text-white hover:opacity-90"
-            onClick={() => router.push('/upload')}
-          >
-            Upload Another Video
-          </Button>
+          <div className="space-x-2">
+            <Button 
+              variant="outline"
+              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              onClick={() => router.push('/market-research')}
+            >
+              View Market Research
+            </Button>
+            <Button 
+              variant="default"
+              className="bg-gradient-to-r from-[#FFB6A3] via-[#FFA088] to-[#FF8A6D] text-white hover:opacity-90"
+              onClick={() => router.push('/upload')}
+            >
+              Upload Another Video
+            </Button>
+          </div>
         </div>
       </div>
     </div>
