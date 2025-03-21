@@ -517,13 +517,22 @@ export default function MarketResearchPage() {
               <Button variant="outline" onClick={() => router.push('/pitch-evaluation')}>
                 Back to Evaluation
               </Button>
-              <Button 
-                variant="default"
-                className="bg-gradient-to-r from-[#FFB6A3] via-[#FFA088] to-[#FF8A6D] text-white hover:opacity-90"
-                onClick={() => router.push('/upload')}
-              >
-                Upload Another Video
-              </Button>
+              <div className="space-x-2">
+                <Button
+                  variant="default"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => router.push('/pitch-deck')}
+                >
+                  View Pitch Deck
+                </Button>
+                <Button 
+                  variant="default"
+                  className="bg-gradient-to-r from-[#FFB6A3] via-[#FFA088] to-[#FF8A6D] text-white hover:opacity-90"
+                  onClick={() => router.push('/upload')}
+                >
+                  Upload Another Video
+                </Button>
+              </div>
             </div>
           </>
         )}
