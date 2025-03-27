@@ -90,6 +90,8 @@ export default function UploadPage() {
 
       // Check if we have a transcript in the response
       if (data.transcript) {
+        console.log('Found transcript in response:', data.transcript.substring(0, 100) + '...');
+        
         // If we have the transcription text directly
         setIsUploading(false)
         setTitle("")
@@ -98,13 +100,29 @@ export default function UploadPage() {
         setUploadProgress(0)
         setStatus("")
         
+        // Make sure the transcript is properly stored as a string
+        let transcriptText = data.transcript;
+        
+        // If it's not a string, try to convert it
+        if (typeof transcriptText !== 'string') {
+          try {
+            transcriptText = JSON.stringify(transcriptText);
+          } catch (e) {
+            console.error('Error converting transcript to string:', e);
+            transcriptText = String(transcriptText);
+          }
+        }
+        
         // Store the transcription in localStorage temporarily
-        localStorage.setItem('lastTranscription', JSON.stringify({
+        const transcriptionData = {
           title,
           description,
-          text: data.transcript,
+          text: transcriptText,
           timestamp: new Date().toISOString()
-        }))
+        }
+        
+        console.log('Storing transcription data with transcript type:', typeof transcriptText);
+        localStorage.setItem('lastTranscription', JSON.stringify(transcriptionData))
         
         // Redirect to transcription display page
         router.push('/transcription/latest')

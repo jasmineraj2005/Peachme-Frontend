@@ -21,6 +21,14 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/video/:path*',
+        destination: 'http://localhost:8000/api/video/:path*',
+      },
+    ]
+  },
 }
 
 mergeConfig(nextConfig, userConfig)

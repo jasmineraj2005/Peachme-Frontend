@@ -9,14 +9,12 @@ services:
       - ./peachme_fastapi/main.py:/app/main.py
       - ./peachme_fastapi/app:/app/app
       - ./peachme_fastapi/media:/app/media
-      - ./peachme_fastapi/peachme.db:/app/peachme.db
       - ./.env:/app/.env
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
       - LANGCHAIN_PROJECT=${LANGCHAIN_PROJECT}
       - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2}
-      - DATABASE_URL=${DATABASE_URL}
       - CORS_ORIGINS=${CORS_ORIGINS}
     restart: unless-stopped
 
